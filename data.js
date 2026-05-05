@@ -8,7 +8,7 @@ const REAL_DATA = {
     "convenios": [
         {
             "name": "CEAM BRASIL",
-            "color": "#4f46e5",
+            "color": "#6366f1",
             "data": [
                 225212.39,
                 167357.63,
@@ -68,7 +68,7 @@ const REAL_DATA = {
         },
         {
             "name": "PMMG (CV)",
-            "color": "#ec4899",
+            "color": "#f43f5e",
             "data": [
                 34753.38,
                 106969.32,
@@ -78,7 +78,7 @@ const REAL_DATA = {
         },
         {
             "name": "PARTICULAR (AV)",
-            "color": "#06b6d4",
+            "color": "#0ea5e9",
             "data": [
                 42331.02,
                 44027.71,
@@ -88,7 +88,7 @@ const REAL_DATA = {
         },
         {
             "name": "CONVENIADOS PGTO A VISTA (AV)",
-            "color": "#f43f5e",
+            "color": "#d946ef",
             "data": [
                 36448.02,
                 29645.85,
@@ -98,7 +98,7 @@ const REAL_DATA = {
         },
         {
             "name": "CASSI (CV)",
-            "color": "#84cc16",
+            "color": "#f97316",
             "data": [
                 18816.53,
                 16470.73,
@@ -108,7 +108,7 @@ const REAL_DATA = {
         },
         {
             "name": "CISMAS LICITACAO (CO)",
-            "color": "#64748b",
+            "color": "#84cc16",
             "data": [
                 32960.0,
                 4162.28,

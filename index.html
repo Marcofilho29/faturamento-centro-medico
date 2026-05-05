@@ -54,14 +54,22 @@
             <section id="visao-geral" class="tab-content active">
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-label">Faturamento Total (Abril)</div>
+                        <div class="stat-icon" style="color: var(--primary);"><i class="fas fa-wallet"></i></div>
+                        <div class="stat-label">Faturamento Total</div>
                         <div class="stat-value" id="stat-total-billing">R$ 0,00</div>
                         <div class="stat-trend" id="stat-total-trend"></div>
                     </div>
                     <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--success);"><i class="fas fa-chart-line"></i></div>
+                        <div class="stat-label">Crescimento Mensal</div>
+                        <div class="stat-value" id="stat-growth-value">0%</div>
+                        <div class="stat-trend" id="stat-growth-trend">vs mês anterior</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--info);"><i class="fas fa-star"></i></div>
                         <div class="stat-label">Melhor Convênio</div>
                         <div class="stat-value" id="stat-best-convenio">---</div>
-                        <div class="stat-trend" id="stat-best-trend"></div>
+                        <div class="stat-trend" id="stat-best-trend">Líder de volume</div>
                     </div>
                 </div>
 

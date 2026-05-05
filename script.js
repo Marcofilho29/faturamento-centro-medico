@@ -24,22 +24,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalBillingLastMonth = rawConvenios.reduce((acc, c) => acc + c.data[lastMonthIdx], 0);
     const totalBillingPrevMonth = rawConvenios.reduce((acc, c) => acc + c.data[prevMonthIdx], 0);
     
-    // Best convenio name should be from filtered (real names)
-    const bestConvenio = filteredConvenios[0]; 
+    // Calculation: Growth
+    const totalDiff = totalBillingLastMonth - totalBillingPrevMonth;
+    const totalPerc = totalBillingPrevMonth > 0 ? (totalDiff / totalBillingPrevMonth * 100).toFixed(1) : 0;
     
+    // Update DOM
     document.getElementById('stat-total-billing').textContent = 
         `R$ ${totalBillingLastMonth.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     document.getElementById('stat-total-billing').parentElement.querySelector('.stat-label').textContent = 
-        `Faturamento Total (${months[lastMonthIdx]})`;
+        `Faturamento (${months[lastMonthIdx]})`;
     
-    const totalDiff = totalBillingLastMonth - totalBillingPrevMonth;
-    const totalPerc = totalBillingPrevMonth > 0 ? (totalDiff / totalBillingPrevMonth * 100).toFixed(1) : 0;
     document.getElementById('stat-total-trend').innerHTML = 
-        `<i class="fas fa-${totalDiff >= 0 ? 'arrow-up' : 'arrow-down'}"></i> ${Math.abs(totalPerc)}% vs ${months[prevMonthIdx]}`;
+        `<span style="color: ${totalDiff >= 0 ? 'var(--success)' : 'var(--danger)'}">
+            <i class="fas fa-${totalDiff >= 0 ? 'arrow-up' : 'arrow-down'}"></i> ${Math.abs(totalPerc)}%
+        </span> vs ${months[prevMonthIdx]}`;
 
+    // Growth Card
+    document.getElementById('stat-growth-value').textContent = `${totalPerc > 0 ? '+' : ''}${totalPerc}%`;
+    document.getElementById('stat-growth-trend').textContent = totalPerc >= 0 ? 'Expansão de Receita' : 'Retração de Receita';
+    document.getElementById('stat-growth-value').style.color = totalPerc >= 0 ? 'var(--success)' : 'var(--danger)';
+
+    // Best convenio name should be from filtered (real names)
+    const bestConvenio = [...filteredConvenios].sort((a, b) => b.data[lastMonthIdx] - a.data[lastMonthIdx])[0]; 
+    
     if (bestConvenio) {
         document.getElementById('stat-best-convenio').textContent = bestConvenio.name;
-        document.getElementById('stat-best-trend').innerHTML = `<i class="fas fa-medal"></i> Líder do Ranking`;
+        document.getElementById('stat-best-trend').innerHTML = `<i class="fas fa-medal" style="color: var(--warning)"></i> Top Performance`;
     }
 
     // --- Summary Table Logic (Resumo Mensal) ---
@@ -142,15 +152,37 @@ document.addEventListener('DOMContentLoaded', () => {
             datasets: [{
                 label: 'Faturamento (R$)',
                 data: convenios.slice(0, 8).map(c => c.data[lastMonthIdx]),
-                backgroundColor: convenios.map(c => c.color),
-                borderRadius: 6
+                backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                hoverBackgroundColor: 'rgba(99, 102, 241, 1)',
+                borderRadius: 8,
+                barThickness: 32
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true, ticks: { callback: v => 'R$ ' + v.toLocaleString() } } }
+            animation: { duration: 2000, easing: 'easeOutQuart' },
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    padding: 12,
+                    titleFont: { size: 14, weight: '600' },
+                    bodyFont: { size: 13 },
+                    callbacks: { label: (ctx) => `Receita: R$ ${ctx.raw.toLocaleString('pt-BR')}` }
+                }
+            },
+            scales: { 
+                y: { 
+                    beginAtZero: true, 
+                    grid: { display: false },
+                    ticks: { callback: v => 'R$ ' + (v/1000) + 'k', color: '#94a3b8' } 
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8' }
+                }
+            }
         }
     });
 
@@ -162,20 +194,39 @@ document.addEventListener('DOMContentLoaded', () => {
             labels: convenios.slice(0, 10).map(c => c.name),
             datasets: [{
                 data: convenios.slice(0, 10).map(c => c.data[lastMonthIdx]),
-                backgroundColor: convenios.map(c => c.color),
-                borderWidth: 2,
-                borderColor: '#ffffff'
+                backgroundColor: [
+                    '#6366f1', '#10b981', '#f59e0b', '#3b82f6', '#8b5cf6',
+                    '#f43f5e', '#0ea5e9', '#d946ef', '#f97316', '#84cc16'
+                ],
+                borderWidth: 4,
+                borderColor: '#ffffff',
+                hoverOffset: 20
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: 'right', labels: { usePointStyle: true, font: { size: 10 } } } }
+            cutout: '70%',
+            animation: { animateRotate: true, animateScale: true, duration: 2000 },
+            plugins: { 
+                legend: { 
+                    position: 'right', 
+                    labels: { usePointStyle: true, font: { size: 11, family: 'Inter' }, padding: 20 } 
+                },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    padding: 12
+                }
+            }
         }
     });
 
     // 3. Line Chart: Total Evolution (Overview)
     const ctxLineTotal = document.getElementById('lineChartTotalEvolution').getContext('2d');
+    const gradient = ctxLineTotal.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+    gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+
     const monthlyTotalsEvolution = months.map((_, i) => rawConvenios.reduce((acc, c) => acc + c.data[i], 0));
 
     new Chart(ctxLineTotal, {
@@ -185,13 +236,18 @@ document.addEventListener('DOMContentLoaded', () => {
             datasets: [{
                 label: 'Faturamento Total (R$)',
                 data: monthlyTotalsEvolution,
-                borderColor: '#4f46e5',
-                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                borderColor: '#6366f1',
+                backgroundColor: gradient,
                 borderWidth: 4,
                 fill: true,
-                tension: 0.3,
+                tension: 0.4,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#6366f1',
+                pointBorderWidth: 2,
                 pointRadius: 6,
-                pointHoverRadius: 8
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: '#6366f1',
+                pointHoverBorderColor: '#ffffff'
             }]
         },
         options: {
@@ -199,9 +255,21 @@ document.addEventListener('DOMContentLoaded', () => {
             maintainAspectRatio: false,
             plugins: { 
                 legend: { display: false },
-                tooltip: { callbacks: { label: (ctx) => `Total: R$ ${ctx.raw.toLocaleString('pt-BR')}` } }
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    padding: 12,
+                    callbacks: { label: (ctx) => `Faturamento: R$ ${ctx.raw.toLocaleString('pt-BR')}` }
+                }
             },
-            scales: { y: { ticks: { callback: v => 'R$ ' + (v/1000) + 'k' } } }
+            scales: { 
+                y: { 
+                    grid: { color: 'rgba(226, 232, 240, 0.5)', drawBorder: false },
+                    ticks: { callback: v => 'R$ ' + (v/1000) + 'k', color: '#94a3b8' } 
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
         }
     });
 

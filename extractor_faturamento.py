@@ -82,7 +82,7 @@ def main():
     other_convenios = temp_convenios[limit:]
     
     dashboard_data["convenios"] = []
-    colors = ['#4f46e5', '#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#f43f5e', '#84cc16', '#64748b']
+    colors = ['#6366f1', '#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#f43f5e', '#0ea5e9', '#d946ef', '#f97316', '#84cc16']
     
     for i, c in enumerate(top_convenios):
         dashboard_data["convenios"].append({
@@ -114,8 +114,10 @@ def main():
     with open(os.path.join(base_path, "data.js"), "w", encoding="utf-8") as f:
         f.write(js_content)
     
-    print(f"\nSucesso! {len(all_results)} registros processados.")
-    print(f"Dados salvos em 'data.js'.")
+    print(f"\n[OK] Sucesso! {len(all_results)} registros processados.")
+    print(f"[*] {len(months_set)} meses identificados: {', '.join(months_set)}")
+    print(f"[$] Faturamento total consolidado: R$ {sum(d['total'] for d in all_results):,.2f}")
+    print(f"[!] Dados salvos em 'data.js'. Prontos para visualização no Dashboard.")
 
 if __name__ == "__main__":
     main()
