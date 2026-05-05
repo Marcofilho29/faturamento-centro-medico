@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Faturamento | Centro Médico</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-hospital-user"></i>
+                <span>Centro Médico</span>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-tab="visao-geral">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Visão Geral</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-tab="evolucao">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Evolução</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-tab="resumo-mensal">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Resumo Mensal</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <h1 id="page-title">Dashboard de Faturamento</h1>
+                <p class="subtitle" id="current-date">Análise mensal de convênios</p>
+            </header>
+
+            <!-- Tab: Visão Geral -->
+            <section id="visao-geral" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Faturamento Total (Abril)</div>
+                        <div class="stat-value" id="stat-total-billing">R$ 0,00</div>
+                        <div class="stat-trend" id="stat-total-trend"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Melhor Convênio</div>
+                        <div class="stat-value" id="stat-best-convenio">---</div>
+                        <div class="stat-trend" id="stat-best-trend"></div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Distribuição por Convênio</h3>
+                        <canvas id="pieChartDistribution"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3 class="chart-title">Ranking Mensal (Top Convênios)</h3>
+                        <canvas id="barChartBilling"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container" style="height: 400px; margin-top: 2rem;">
+                    <h3 class="chart-title">Evolução do Faturamento Total (Mensal)</h3>
+                    <canvas id="lineChartTotalEvolution"></canvas>
+                </div>
+            </section>
+
+            <!-- Tab: Resumo Mensal -->
+            <section id="resumo-mensal" class="tab-content">
+                <div class="filter-section" style="margin-bottom: 1.5rem;">
+                    <div style="position: relative; max-width: 400px;">
+                        <i class="fas fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="text" id="search-summary" placeholder="Pesquisar convênio no resumo..." style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border-radius: 0.5rem; border: 1px solid var(--border); font-size: 0.875rem;">
+                    </div>
+                </div>
+                <div class="table-container" style="overflow-x: auto;">
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr id="summary-header">
+                                <!-- Preenchido via JS -->
+                            </tr>
+                        </thead>
+                        <tbody id="summary-body">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Tab: Evolução -->
+            <section id="evolucao" class="tab-content">
+                <div class="evolution-controls" style="display: grid; grid-template-columns: 1fr 300px; gap: 2rem; margin-bottom: 2rem;">
+                    <div class="checkbox-panel" style="background: var(--surface); padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border); box-shadow: var(--shadow);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h4 style="margin: 0;">Selecionar Convênios</h4>
+                            <div style="position: relative; width: 250px;">
+                                <i class="fas fa-filter" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.8rem;"></i>
+                                <input type="text" id="filter-checkboxes" placeholder="Pesquisar para marcar..." style="width: 100%; padding: 0.4rem 0.5rem 0.4rem 2rem; border-radius: 6px; border: 1px solid var(--border); font-size: 0.8rem;">
+                            </div>
+                        </div>
+                        
+                        <div id="checkbox-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.5rem; max-height: 200px; overflow-y: auto; padding-right: 1rem;">
+                            <!-- Checkboxes via JS -->
+                        </div>
+                        <div style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                            <button id="select-all" style="background: #f1f5f9; border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">Marcar Todos</button>
+                            <button id="deselect-all" style="background: #f1f5f9; border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">Desmarcar Todos</button>
+                        </div>
+                    </div>
+
+                    <div class="stats-panel-group" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div class="total-panel" style="background: var(--primary); color: white; padding: 1.5rem; border-radius: 1rem; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; flex: 1;">
+                            <h4 style="font-weight: 500; opacity: 0.9;">Soma dos Selecionados</h4>
+                            <div id="selected-total-value" style="font-size: 1.75rem; font-weight: 700; margin: 0.5rem 0;">R$ 0,00</div>
+                            <p style="font-size: 0.75rem; opacity: 0.8;">Total acumulado no período</p>
+                        </div>
+
+                        <div class="average-panel" style="background: #10b981; color: white; padding: 1.5rem; border-radius: 1rem; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; flex: 1;">
+                            <h4 style="font-weight: 500; opacity: 0.9;">Média Mensal</h4>
+                            <div id="selected-average-value" style="font-size: 1.75rem; font-weight: 700; margin: 0.5rem 0;">R$ 0,00</div>
+                            <p style="font-size: 0.75rem; opacity: 0.8;">Média por mês selecionado</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container" style="overflow-x: auto;">
+                    <table id="table-evolution">
+                        <thead>
+                            <tr id="evolution-header">
+                                <!-- Preenchido via JS -->
+                            </tr>
+                        </thead>
+                        <tbody id="evolution-body">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
